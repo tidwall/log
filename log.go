@@ -267,7 +267,7 @@ func (w *Logger) Noticef(format string, args ...interface{}) {
 
 // Warn prints variables [WARN] tag
 func (w *Logger) Warn(v ...interface{}) {
-	w.pl().Printf("[WARN] %s", w.ltag(), expand(v))
+	w.pl().Printf("[WARN] %s%s", w.ltag(), expand(v))
 }
 
 // Warnf prints format [WARN] tag
@@ -277,7 +277,7 @@ func (w *Logger) Warnf(format string, args ...interface{}) {
 
 // Debug prints variables [DEBU] tag
 func (w *Logger) Debug(v ...interface{}) {
-	w.pl().Printf("[DEBU] %s", w.ltag(), expand(v))
+	w.pl().Printf("[DEBU] %s%s", w.ltag(), expand(v))
 }
 
 // Debugf prints format [DEBU] tag
@@ -287,7 +287,7 @@ func (w *Logger) Debugf(format string, args ...interface{}) {
 
 // Error prints variables [ERRO] tag
 func (w *Logger) Error(v ...interface{}) {
-	w.pl().Printf("[ERRO] %s", w.ltag(), expand(v))
+	w.pl().Printf("[ERRO] %s%s", w.ltag(), expand(v))
 }
 
 // Errorf prints format [ERRO] tag
@@ -297,7 +297,7 @@ func (w *Logger) Errorf(format string, args ...interface{}) {
 
 // Fatal prints variables [FATA] tag followed by an os.Exit(-1).
 func (w *Logger) Fatal(v ...interface{}) {
-	w.pl().Printf("[FATA] %s", w.ltag(), expand(v))
+	w.pl().Printf("[FATA] %s%s", w.ltag(), expand(v))
 	os.Exit(-1)
 }
 
@@ -308,7 +308,7 @@ func (w *Logger) Fatalf(format string, args ...interface{}) {
 
 // HTTP prints variables [HTTP] tag
 func (w *Logger) HTTP(v ...interface{}) {
-	w.pl().Printf("[HTTP] %s", w.ltag(), expand(v))
+	w.pl().Printf("[HTTP] %s%s", w.ltag(), expand(v))
 }
 
 // HTTPf prints format [HTTP] tag
@@ -318,7 +318,7 @@ func (w *Logger) HTTPf(format string, args ...interface{}) {
 
 // Time prints variables [TIME] tag
 func (w *Logger) Time(v ...interface{}) {
-	w.pl().Printf("[TIME] %s", w.ltag(), expand(v))
+	w.pl().Printf("[TIME] %s%s", w.ltag(), expand(v))
 }
 
 // Timef prints format [TIME] tag
