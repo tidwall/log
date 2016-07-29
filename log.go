@@ -51,6 +51,9 @@ type Logger struct {
 	l   *log.Logger
 	st  time.Time
 	tth time.Duration
+
+	parent *Logger
+	subtag string
 }
 
 // New creates a new Logger and outputs to w.
@@ -64,6 +67,33 @@ func New(w io.Writer, cfg *Config) *Logger {
 	return lc
 }
 
+func (w *Logger) Sub(tag string) *Logger {
+	for w.parent != nil {
+		w = w.parent
+	}
+	if tag != "" {
+		tag += ": "
+	}
+	return &Logger{parent: w, subtag: tag}
+}
+func (w *Logger) Output() io.Writer {
+	for w.parent != nil {
+		w = w.parent
+	}
+	return w
+}
+func (w *Logger) pl() *log.Logger {
+	if w.parent != nil {
+		return w.parent.l
+	}
+	return w.l
+}
+func (w *Logger) ltag() string {
+	if w.parent != nil {
+		return w.subtag
+	}
+	return ""
+}
 func (w *Logger) format(b []byte) []byte {
 	s := string(b)
 	if strings.Contains(s, "!RESET_TIME!") {
@@ -192,7 +222,7 @@ func (w *Logger) Printf(format string, args ...interface{}) {
 
 // Info prints variables with [INFO] tag
 func (w *Logger) Info(v ...interface{}) {
-	w.l.Printf("[INFO] %s", expand(v))
+	w.pl().Printf("[INFO] %s%s", w.ltag(), expand(v))
 }
 
 // Infof prints format [INFO] tag
@@ -202,7 +232,7 @@ func (w *Logger) Infof(format string, args ...interface{}) {
 
 // Notice prints variables [NOTI] tag
 func (w *Logger) Notice(v ...interface{}) {
-	w.l.Printf("[NOTI] %s", expand(v))
+	w.pl().Printf("[NOTI] %s%s", w.ltag(), expand(v))
 }
 
 // Noticef prints format [NOTI] tag
@@ -212,7 +242,7 @@ func (w *Logger) Noticef(format string, args ...interface{}) {
 
 // Warn prints variables [WARN] tag
 func (w *Logger) Warn(v ...interface{}) {
-	w.l.Printf("[WARN] %s", expand(v))
+	w.pl().Printf("[WARN] %s", w.ltag(), expand(v))
 }
 
 // Warnf prints format [WARN] tag
@@ -222,7 +252,7 @@ func (w *Logger) Warnf(format string, args ...interface{}) {
 
 // Debug prints variables [DEBU] tag
 func (w *Logger) Debug(v ...interface{}) {
-	w.l.Printf("[DEBU] %s", expand(v))
+	w.pl().Printf("[DEBU] %s", w.ltag(), expand(v))
 }
 
 // Debugf prints format [DEBU] tag
@@ -232,7 +262,7 @@ func (w *Logger) Debugf(format string, args ...interface{}) {
 
 // Error prints variables [ERRO] tag
 func (w *Logger) Error(v ...interface{}) {
-	w.l.Printf("[ERRO] %s", expand(v))
+	w.pl().Printf("[ERRO] %s", w.ltag(), expand(v))
 }
 
 // Errorf prints format [ERRO] tag
@@ -242,7 +272,7 @@ func (w *Logger) Errorf(format string, args ...interface{}) {
 
 // Fatal prints variables [FATA] tag followed by an os.Exit(-1).
 func (w *Logger) Fatal(v ...interface{}) {
-	w.l.Printf("[FATA] %s", expand(v))
+	w.pl().Printf("[FATA] %s", w.ltag(), expand(v))
 	os.Exit(-1)
 }
 
@@ -253,7 +283,7 @@ func (w *Logger) Fatalf(format string, args ...interface{}) {
 
 // HTTP prints variables [HTTP] tag
 func (w *Logger) HTTP(v ...interface{}) {
-	w.l.Printf("[HTTP] %s", expand(v))
+	w.pl().Printf("[HTTP] %s", w.ltag(), expand(v))
 }
 
 // HTTPf prints format [HTTP] tag
@@ -263,7 +293,7 @@ func (w *Logger) HTTPf(format string, args ...interface{}) {
 
 // Time prints variables [TIME] tag
 func (w *Logger) Time(v ...interface{}) {
-	w.l.Printf("[TIME] %s", expand(v))
+	w.pl().Printf("[TIME] %s", w.ltag(), expand(v))
 }
 
 // Timef prints format [TIME] tag
