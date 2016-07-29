@@ -39,6 +39,7 @@ type Config struct {
 	HideFatal  bool
 	HideHTTP   bool
 	NoColors   bool
+	WordColors map[string]string
 }
 
 // Logger is log
@@ -160,9 +161,33 @@ func (w *Logger) format(b []byte) []byte {
 				s = s[:len(s)-1] + str + s[len(s)-1:]
 			}
 			if !w.cfg.NoColors {
-				s = strings.Replace(s, "[Leader]", green+"[Leader]"+clear, -1)
-				s = strings.Replace(s, "[Follower]", red+"[Follower]"+clear, -1)
-				s = strings.Replace(s, "[Candidate]", yellow+"[Candidate]"+clear, -1)
+				for word, color := range w.cfg.WordColors {
+					switch color {
+					default:
+						continue
+					case "bright":
+						color = bright
+					case "dim":
+						color = dim
+					case "black":
+						color = black
+					case "red":
+						color = red
+					case "green":
+						color = green
+					case "yellow":
+						color = yellow
+					case "blue":
+						color = blue
+					case "magenta":
+						color = magenta
+					case "cyan":
+						color = cyan
+					case "white":
+						color = white
+					}
+					s = strings.Replace(s, word, color+word+clear, -1)
+				}
 			}
 		}
 	}
