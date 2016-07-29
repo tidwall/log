@@ -41,8 +41,8 @@ type Config struct {
 	NoColors   bool
 }
 
-// Log is log
-type Log struct {
+// Logger is log
+type Logger struct {
 	mu  sync.RWMutex
 	w   io.Writer
 	ib  []byte
@@ -53,18 +53,18 @@ type Log struct {
 	tth time.Duration
 }
 
-// New creates a new Log and outputs to w.
-func New(w io.Writer, cfg *Config) *Log {
+// New creates a new Logger and outputs to w.
+func New(w io.Writer, cfg *Config) *Logger {
 	if cfg == nil {
 		cfg = &Config{}
 	}
-	lc := &Log{w: w, cfg: cfg}
+	lc := &Logger{w: w, cfg: cfg}
 	lc.l = log.New(lc, "", log.LstdFlags)
 	lc.st = time.Now()
 	return lc
 }
 
-func (w *Log) format(b []byte) []byte {
+func (w *Logger) format(b []byte) []byte {
 	s := string(b)
 	if strings.Contains(s, "!RESET_TIME!") {
 		w.st = time.Now()
@@ -140,7 +140,7 @@ func (w *Log) format(b []byte) []byte {
 }
 
 // Write writes data directly to the log
-func (w *Log) Write(p []byte) (n int, err error) {
+func (w *Logger) Write(p []byte) (n int, err error) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	w.ib = append(w.ib, p...)
@@ -181,108 +181,108 @@ func expand(v []interface{}) string {
 }
 
 // Print is equivlent to Info
-func (w *Log) Print(v ...interface{}) {
+func (w *Logger) Print(v ...interface{}) {
 	w.Info(expand(v))
 }
 
 // Printf is equivlent to Infof
-func (w *Log) Printf(format string, args ...interface{}) {
+func (w *Logger) Printf(format string, args ...interface{}) {
 	w.Infof(format, args...)
 }
 
 // Info prints variables with [INFO] tag
-func (w *Log) Info(v ...interface{}) {
+func (w *Logger) Info(v ...interface{}) {
 	w.l.Printf("[INFO] %s", expand(v))
 }
 
 // Infof prints format [INFO] tag
-func (w *Log) Infof(format string, args ...interface{}) {
+func (w *Logger) Infof(format string, args ...interface{}) {
 	w.Info(fmt.Sprintf(format, args...))
 }
 
 // Notice prints variables [NOTI] tag
-func (w *Log) Notice(v ...interface{}) {
+func (w *Logger) Notice(v ...interface{}) {
 	w.l.Printf("[NOTI] %s", expand(v))
 }
 
 // Noticef prints format [NOTI] tag
-func (w *Log) Noticef(format string, args ...interface{}) {
+func (w *Logger) Noticef(format string, args ...interface{}) {
 	w.Notice(fmt.Sprintf(format, args...))
 }
 
 // Warn prints variables [WARN] tag
-func (w *Log) Warn(v ...interface{}) {
+func (w *Logger) Warn(v ...interface{}) {
 	w.l.Printf("[WARN] %s", expand(v))
 }
 
 // Warnf prints format [WARN] tag
-func (w *Log) Warnf(format string, args ...interface{}) {
+func (w *Logger) Warnf(format string, args ...interface{}) {
 	w.Warn(fmt.Sprintf(format, args...))
 }
 
 // Debug prints variables [DEBU] tag
-func (w *Log) Debug(v ...interface{}) {
+func (w *Logger) Debug(v ...interface{}) {
 	w.l.Printf("[DEBU] %s", expand(v))
 }
 
 // Debugf prints format [DEBU] tag
-func (w *Log) Debugf(format string, args ...interface{}) {
+func (w *Logger) Debugf(format string, args ...interface{}) {
 	w.Debug(fmt.Sprintf(format, args...))
 }
 
 // Error prints variables [ERRO] tag
-func (w *Log) Error(v ...interface{}) {
+func (w *Logger) Error(v ...interface{}) {
 	w.l.Printf("[ERRO] %s", expand(v))
 }
 
 // Errorf prints format [ERRO] tag
-func (w *Log) Errorf(format string, args ...interface{}) {
+func (w *Logger) Errorf(format string, args ...interface{}) {
 	w.Error(fmt.Sprintf(format, args...))
 }
 
 // Fatal prints variables [FATA] tag followed by an os.Exit(-1).
-func (w *Log) Fatal(v ...interface{}) {
+func (w *Logger) Fatal(v ...interface{}) {
 	w.l.Printf("[FATA] %s", expand(v))
 	os.Exit(-1)
 }
 
 // Fatalf prints format [FATA] tag followed by an os.Exit(-1).
-func (w *Log) Fatalf(format string, args ...interface{}) {
+func (w *Logger) Fatalf(format string, args ...interface{}) {
 	w.Fatal(fmt.Sprintf(format, args...))
 }
 
 // HTTP prints variables [HTTP] tag
-func (w *Log) HTTP(v ...interface{}) {
+func (w *Logger) HTTP(v ...interface{}) {
 	w.l.Printf("[HTTP] %s", expand(v))
 }
 
 // HTTPf prints format [HTTP] tag
-func (w *Log) HTTPf(format string, args ...interface{}) {
+func (w *Logger) HTTPf(format string, args ...interface{}) {
 	w.HTTP(fmt.Sprintf(format, args...))
 }
 
 // Time prints variables [TIME] tag
-func (w *Log) Time(v ...interface{}) {
+func (w *Logger) Time(v ...interface{}) {
 	w.l.Printf("[TIME] %s", expand(v))
 }
 
 // Timef prints format [TIME] tag
-func (w *Log) Timef(format string, args ...interface{}) {
+func (w *Logger) Timef(format string, args ...interface{}) {
 	w.Time(fmt.Sprintf(format, args...))
 }
 
 // ResetTime reset the start time
-func (w *Log) ResetTime() {
+func (w *Logger) ResetTime() {
 	w.mu.Lock()
+	defer w.mu.Unlock()
 	w.st = time.Now()
-	w.mu.Unlock()
 }
 
 // TimeMinimum sets the minimum duration before the time elapsed text appears
-func (w *Log) TimeMinimum(min time.Duration) {
+func (w *Logger) TimeMinimum(min time.Duration) {
 	w.mu.Lock()
+	defer w.mu.Unlock()
 	w.tth = min
-	w.mu.Unlock()
 }
 
 // ResetTime reset the start time
