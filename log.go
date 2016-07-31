@@ -30,16 +30,17 @@ const (
 
 // Config is the log configuration
 type Config struct {
-	HideInfo   bool
-	HideTime   bool
-	HideNotice bool
-	HideWarn   bool
-	HideDebug  bool
-	HideError  bool
-	HideFatal  bool
-	HideHTTP   bool
-	NoColors   bool
-	WordColors map[string]string
+	HideInfo    bool
+	HideTime    bool
+	HideNotice  bool
+	HideWarn    bool
+	HideDebug   bool
+	HideError   bool
+	HideFatal   bool
+	HideHTTP    bool
+	NoColors    bool
+	WordColors  map[string]string
+	IgnoreWords []string
 }
 
 // Logger is log
@@ -97,6 +98,11 @@ func (w *Logger) ltag() string {
 }
 func (w *Logger) format(b []byte) []byte {
 	s := string(b)
+	for _, word := range w.cfg.IgnoreWords {
+		if strings.Contains(s, word) {
+			return nil
+		}
+	}
 	if strings.Contains(s, "!RESET_TIME!") {
 		w.st = time.Now()
 		return nil
