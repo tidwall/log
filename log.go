@@ -129,7 +129,7 @@ func (w *Logger) format(b []byte) []byte {
 			case "FATAL", "FATA":
 				otag, color, hide = "[FATA]", red, w.cfg.HideFatal
 			case "ERR", "ERRO", "ERROR":
-				otag, color, hide = "[ERRO]", bright+red, w.cfg.HideError
+				otag, color, hide = "[ERRO]", red, w.cfg.HideError
 			case "WARN":
 				otag, color, hide = "[WARN]", yellow, w.cfg.HideWarn
 			case "NOTI":
